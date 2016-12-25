@@ -17,14 +17,14 @@ Maze::~Maze() {
 		_path.pop_back();
 	}
 }
-bool Maze::CreateMaze(const int& mapSize) {           //mapSzie迷宫大小
+bool Maze::CreateMaze(const int& y,const int&x) {           //mapSzie迷宫大小
 	//建立迷宫
 	int* digit = NULL;
 	string str;                      
-	for(int i=0;i<mapSize;i++)  //录入迷宫
+	for(int i=0;i<y;i++)  //录入迷宫
 	{
 		cin >> str;
-		if (str.size() != mapSize)     //每行大小要等于mapSize
+		if (str.size() != x)     //每行大小要等于mapSize
 			return false;
 		for (int i = 0; i < str.length(); i++)
 		{
@@ -33,10 +33,10 @@ bool Maze::CreateMaze(const int& mapSize) {           //mapSzie迷宫大小
 		}
 		_map.push_back(str);
 		str.clear();
-		digit = new int[mapSize];      
+		digit = new int[x];      
 		if (digit == NULL)
 			return false;
-		for (int j = 0; j < mapSize; j++)    //给标志矩阵全部初始化为0
+		for (int j = 0; j < x; j++)    //给标志矩阵全部初始化为0
 			digit[j] = 0;
 		_mark.push_back(digit);
 		digit = NULL;
@@ -45,43 +45,43 @@ bool Maze::CreateMaze(const int& mapSize) {           //mapSzie迷宫大小
 	return true;
 }
 
-bool Maze::FindPath() {
+bool Maze::FindPath(int const&inx,int const& iny,int const& outx,int const& outy) {
 	//找迷宫路径
-	Find(1, 1);
+	Find(inx-1,iny-1,outx-1,outy-1);
 	if (_judge != true)
 		return false;
 	return true;
 }
-void Maze::Find(int x, int y) {
+void Maze::Find(int x, int y,int const& outx,int const& outy) {
 	//递归找迷宫路径
-	int size = _map[0].size();      //迷宫长
-	int m = size - 2;               //用于迷宫出口的下标
+	int sizey = _map[0].size();//迷宫长
+	int sizex = _map.size();   //迷宫列长
 	int* num = new int[2];
 	num[0] = x;                
 	num[1] = y;
 	_path.push_back(num);           //记录路径
 	_mark[x][y] = 1;                //标记已经走过的地方
-	if (x == m&&y == m)             //递归结束条件
+	if (x == outx&&y == outy)             //递归结束条件
 	{
 		_judge = true;
 		return;
 	}
-	if (_judge != true&&_map[x - 1][y] != '#'&&_mark[x - 1][y] != 1)   //向上
+	if (_judge != true&& x-1>=0 &&_map[x - 1][y] != '#'&&_mark[x - 1][y] != 1)   //向上
 	{
 		
-		Find(x -1, y);
+		Find(x -1, y,outx,outy);
 	}
-	if (_judge != true&&_map[x][y + 1] != '#'&&_mark[x][y+1] != 1 )    //向右
+	if (_judge != true&& y+1<=sizey-1 &&_map[x][y + 1] != '#'&&_mark[x][y+1] != 1 )    //向右
 	{
-		Find(x,y + 1);
+		Find(x,y + 1, outx, outy);
 	}
-	if (_judge != true &&_map[x + 1][y] != '#'&&_mark[x +1][y] != 1)  //向下
+	if (_judge != true&& x+1<=sizex-1 &&_map[x + 1][y] != '#'&&_mark[x +1][y] != 1)  //向下
 	{
-		Find(x + 1, y);
+		Find(x + 1, y, outx, outy);
 	}
-	if (_judge != true &&_map[x][y - 1] != '#'&&_mark[x][y-1] != 1)   //向左
+	if (_judge != true&& y-1>=0 &&_map[x][y - 1] != '#'&&_mark[x][y-1] != 1)   //向左
 	{
-		Find(x, y - 1);
+		Find(x, y - 1, outx, outy);
 	}
 	if (_judge != true)
 	{
@@ -107,7 +107,8 @@ void Maze::Show() {
 	}
 	cout << endl;
 	cout << endl;
-	for (int i = 0; i < size; i++)
+	int row = _map.size();
+	for (int i = 0; i < row; i++)
 	{
 		cout << i << "行   ";
 		for (int j = 0; j < size; j++)
